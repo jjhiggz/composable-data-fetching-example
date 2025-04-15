@@ -58,16 +58,18 @@ onKeyStroke('Escape', handleClose)
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background: var(--color-background, white);
+  background: var(--color-background);
   border-radius: 8px;
   max-width: 80%;
   max-height: 80vh;
   width: 600px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 
 .modal-header {
@@ -75,12 +77,13 @@ onKeyStroke('Escape', handleClose)
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background-soft);
 }
 
 .modal-header h3 {
   margin: 0;
-  color: var(--color-heading, #111827);
+  color: var(--color-heading);
   font-weight: 600;
 }
 
@@ -90,18 +93,20 @@ onKeyStroke('Escape', handleClose)
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
-  color: var(--color-text, #374151);
+  color: var(--color-text);
   border-radius: 4px;
+  line-height: 1;
 }
 
 .close-button:hover {
-  background: var(--color-background-soft, #f3f4f6);
+  background: var(--color-background);
 }
 
 .modal-body {
   padding: 1rem;
   overflow: auto;
   max-height: calc(80vh - 4rem);
+  background: var(--color-background);
 }
 
 pre {
@@ -111,6 +116,6 @@ pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--color-text, #374151);
+  color: var(--color-text);
 }
 </style>

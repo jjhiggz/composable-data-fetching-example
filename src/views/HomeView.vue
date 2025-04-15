@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { useLogout, useOptionalUser } from '@/hooks/use-auth'
+import { useTheme } from '@/user-preferences/use-theme'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 import JsonModal from '@/components/JsonModal.vue'
 
@@ -10,6 +11,7 @@ const router = useRouter()
 const { data: userData } = useOptionalUser()
 const { mutate: logout, isPending: isLoggingOut } = useLogout()
 const { data: preferences, isLoading, error } = useUserPreferences()
+const { themePreference, toggleTheme } = useTheme()
 
 const showModal = ref(false)
 const selectedPreference = ref<UserPreference | null>(null)
@@ -27,12 +29,23 @@ const openJsonView = (preference: UserPreference) => {
 </script>
 
 <template>
-  <main>
+  <main :class="themePreference.theme">
     <div class="user-info">
+      <div class="user-controls">
+        <button
+          class="theme-toggle"
+          @click="toggleTheme"
+          :title="
+            themePreference.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+          "
+        >
+          {{ themePreference.theme === 'dark' ? '🌞' : '🌙' }}
+        </button>
+        <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
+          {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+        </button>
+      </div>
       <span>Welcome, {{ userData?.id ?? 'nobody' }}</span>
-      <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
-        {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
-      </button>
     </div>
 
     <div class="preferences-container">
@@ -71,10 +84,56 @@ const openJsonView = (preference: UserPreference) => {
 <style scoped>
 .user-info {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem;
   gap: 1rem;
+}
+
+.user-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  line-height: 1;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--color-background-soft);
+}
+
+:root {
+  --color-background: #ffffff;
+  --color-background-soft: #f8f8f8;
+  --color-text: #374151;
+  --color-heading: #111827;
+  --color-border: #e5e7eb;
+}
+
+.dark {
+  --color-background: #1a1a1a;
+  --color-background-soft: #2a2a2a;
+  --color-text: #e5e7eb;
+  --color-heading: #f3f4f6;
+  --color-border: #4b5563;
+}
+
+main {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .logout-button {
@@ -109,6 +168,7 @@ const openJsonView = (preference: UserPreference) => {
 
 .table-section {
   margin-bottom: 2rem;
+  padding: 0 1rem;
 }
 
 .table-section h3 {
@@ -129,16 +189,12 @@ const openJsonView = (preference: UserPreference) => {
   color: #dc2626;
 }
 
-.table-container {
-  overflow-x: auto;
-  background: var(--color-background-soft);
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--color-background-soft);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th,

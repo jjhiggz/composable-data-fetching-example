@@ -29,6 +29,12 @@
       "id": "pref5",
       "preferredPaymentMethod": "wire-transfer",
       "user": "user456"
+    },
+    {
+      "id": "cb7b",
+      "group": "theme",
+      "user": "sdf",
+      "theme": "dark"
     }
   ]
 }

@@ -1,8 +1,15 @@
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'
 import type { UserPreference } from '../user-preferences/user-preference.types'
 
-const throwIfNotOk = (message: string) => (response: Response) => {
-  if (!response.ok) throw new Error(message)
+const throwIfNotOk = (message: string) => async (response: Response) => {
+  if (!response.ok) {
+    console.error({
+      status: response.status,
+      body: await response.text(),
+    })
+    throw new Error(message)
+  }
+
   return response
 }
 
@@ -28,7 +35,7 @@ export const upsertUserPreference = async (userPreference: Optional<UserPreferen
   }
 
   return fetch(`${baseUrl}/user-preferences/${userPreference.id}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       ['Content-Type']: 'application/json',
     },
