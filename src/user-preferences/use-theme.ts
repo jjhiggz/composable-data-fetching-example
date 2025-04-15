@@ -1,4 +1,4 @@
-import { createUserPreference, useUserPreferences } from '@/hooks/use-user-preferences'
+import { createUserPreference, useUserPreferences } from '@/user-preferences/use-user-preferences'
 import type { ThemePreference } from './user-preference.types'
 import { computed, type ComputedRef } from 'vue'
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'

@@ -1,4 +1,4 @@
-import { createUserPreference, useUserPreferences } from '@/hooks/use-user-preferences'
+import { createUserPreference, useUserPreferences } from '@/user-preferences/use-user-preferences'
 import {
   allKnownModals,
   type FirstTimeModalPreference,

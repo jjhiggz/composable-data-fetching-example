@@ -1,6 +1,6 @@
 import { getUserPreferences, upsertUserPreference } from '@/fetch/get-user-preferences'
 import { useMutation, useQuery } from '@tanstack/vue-query'
-import { useOptionalUser } from './use-auth'
+import { useOptionalUser } from '../hooks/use-auth'
 import { computed } from 'vue'
 
 export const useUserPreferences = () => {

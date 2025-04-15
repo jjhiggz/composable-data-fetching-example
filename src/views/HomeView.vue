@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { useUserPreferences } from '@/user-preferences/use-user-preferences'
 import { useLogout, useOptionalUser } from '@/hooks/use-auth'
 import { useTheme } from '@/user-preferences/use-theme'
 import { useFirstTimeModal } from '@/user-preferences/use-first-time-modal'
