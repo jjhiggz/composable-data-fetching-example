@@ -31,12 +31,19 @@ onKeyStroke('Escape', handleClose)
 </script>
 
 <template>
-  <div class="modal-backdrop" id="modal">
-    <h1>Fucks</h1>
-    <div ref="modalContent" class="modal-content">
-      <pre>{{ formattedJson }}</pre>
+  <Teleport to="body">
+    <div v-if="modelValue" class="modal-backdrop" @click="handleClose">
+      <div ref="modalContent" class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>JSON View</h3>
+          <button class="close-button" @click="handleClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <pre>{{ formattedJson }}</pre>
+        </div>
+      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -54,17 +61,56 @@ onKeyStroke('Escape', handleClose)
 }
 
 .modal-content {
-  background: white;
-  padding: 2rem;
+  background: var(--color-background, white);
   border-radius: 8px;
   max-width: 80%;
-  max-height: 80%;
+  max-height: 80vh;
+  width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--color-heading, #111827);
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-text, #374151);
+  border-radius: 4px;
+}
+
+.close-button:hover {
+  background: var(--color-background-soft, #f3f4f6);
+}
+
+.modal-body {
+  padding: 1rem;
   overflow: auto;
+  max-height: calc(80vh - 4rem);
 }
 
 pre {
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text, #374151);
 }
 </style>
