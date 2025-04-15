@@ -1,0 +1,34 @@
+{
+  "user-preferences": [
+    {
+      "group": "first-time-modal",
+      "id": "pref1",
+      "seenModals": [],
+      "user": "user123"
+    },
+    {
+      "group": "theme",
+      "id": "pref2",
+      "theme": "dark",
+      "user": "user123"
+    },
+    {
+      "group": "preferred-payment",
+      "id": "pref3",
+      "preferredPaymentMethod": "credit-card",
+      "user": "user123"
+    },
+    {
+      "group": "theme",
+      "id": "pref4",
+      "theme": "light",
+      "user": "user456"
+    },
+    {
+      "group": "preferred-payment",
+      "id": "pref5",
+      "preferredPaymentMethod": "wire-transfer",
+      "user": "user456"
+    }
+  ]
+}
