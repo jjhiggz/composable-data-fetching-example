@@ -30,17 +30,10 @@ const handleLogout = () => {
   router.push('/login')
 }
 
-const formatPreferenceValue = (preference: UserPreference) => {
-  switch (preference.group) {
-    case 'first-time-modal':
-      return `Seen modals: ${preference.seenModals.join(', ')}`
-    case 'theme':
-      return `Theme: ${preference.theme}`
-    case 'preferred-payment':
-      return `Payment method: ${preference.preferredPaymentMethod}`
-    default:
-      return 'Unknown preference type'
-  }
+const formatPreference = (pref: UserPreference) => {
+  // Remove common fields to make the output more concise
+  const { id, user, group, ...relevantData } = pref
+  return JSON.stringify(relevantData, null, 2)
 }
 </script>
 
@@ -63,11 +56,9 @@ const formatPreferenceValue = (preference: UserPreference) => {
       <div v-else class="preferences-groups">
         <div v-for="(prefs, group) in groupedPreferences" :key="group" class="preference-group">
           <h3>{{ group.replace('-', ' ') }}</h3>
-          <ul>
-            <li v-for="pref in prefs" :key="pref.id" class="preference-item">
-              {{ formatPreferenceValue(pref) }}
-            </li>
-          </ul>
+          <pre v-for="pref in prefs" :key="pref.id" class="preference-item">{{
+            formatPreference(pref)
+          }}</pre>
         </div>
       </div>
     </div>
@@ -140,13 +131,13 @@ const formatPreferenceValue = (preference: UserPreference) => {
 }
 
 .preference-item {
-  padding: 0.5rem 0;
+  padding: 1rem;
   color: var(--color-text);
-  list-style: none;
-}
-
-ul {
-  margin: 0;
-  padding: 0;
+  background: var(--color-background);
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 </style>
