@@ -1,3 +1,5 @@
+import type { Optional } from 'ts-toolbelt/out/Object/Optional'
+
 type UserPreferenceBase = {
   id: string
   group: string
@@ -20,11 +22,11 @@ export interface ThemePreference extends UserPreferenceBase {
   theme: 'light' | 'dark'
 }
 
-export interface PreferredPayment extends UserPreferenceBase {
+export interface PreferredPaymentPreference extends UserPreferenceBase {
   id: string
   user: string
   group: 'preferred-payment'
   preferredPaymentMethod: 'balances' | 'credit-card' | 'wire-transfer'
 }
 
-export type UserPreference = FirstTimeModalPreference | ThemePreference | PreferredPayment
+export type UserPreference = FirstTimeModalPreference | ThemePreference | PreferredPaymentPreference
