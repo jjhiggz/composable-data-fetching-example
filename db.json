@@ -43,6 +43,14 @@
         "balances"
       ],
       "user": "sdf"
+    },
+    {
+      "id": "a4c0",
+      "group": "first-time-modal",
+      "user": "jon",
+      "seenModals": [
+        "balances"
+      ]
     }
   ]
 }

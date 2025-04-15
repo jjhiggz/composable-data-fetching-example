@@ -6,20 +6,21 @@ import type { Character } from './character.type'
 export const useCharacters = () => {
   const filters = ref<CharacterFiltersPartial>({})
   const filterKeys = computed(() =>
-    Object.entries(filters).map(([key, value]) => `${key}-${value}`),
+    Object.entries(filters.value).map(([key, value]) => `${key}-${value}`),
   )
 
-  const { data } = useQuery({
+  const query = useQuery({
     queryKey: ['characters', ...filterKeys.value],
     queryFn: () => getCharacters(filters.value),
+    initialData: [] as Character[],
   })
 
-  const characters: ComputedRef<Character[]> = computed(() => {
-    return data.value ?? []
-  })
+  const characters: ComputedRef<Character[]> = computed(() => query.data.value)
 
   return {
     characters,
     filters,
+    isLoading: computed(() => query.isLoading.value),
+    error: computed(() => query.error.value),
   }
 }

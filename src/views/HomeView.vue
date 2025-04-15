@@ -5,6 +5,8 @@ import { useUserPreferences } from '@/user-preferences/use-user-preferences'
 import { useLogout, useOptionalUser } from '@/hooks/use-auth'
 import { useTheme } from '@/user-preferences/use-theme'
 import { useFirstTimeModal } from '@/user-preferences/use-first-time-modal'
+import { useCharacters } from '@/user-preferences/characters/use-characters'
+import { useDebounceFn } from '@vueuse/core'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 import JsonModal from '@/components/JsonModal.vue'
 import BalancesModal from '@/components/BalancesModal.vue'
@@ -12,12 +14,28 @@ import BalancesModal from '@/components/BalancesModal.vue'
 const router = useRouter()
 const { data: userData } = useOptionalUser()
 const { mutate: logout, isPending: isLoggingOut } = useLogout()
-const { data: preferences, isLoading, error } = useUserPreferences()
+const {
+  data: preferences,
+  isLoading: preferencesLoading,
+  error: preferencesError,
+} = useUserPreferences()
 const { themePreference, toggleTheme } = useTheme()
 const { currentlyOpenedModalType, closeForever, closeTemporarily } = useFirstTimeModal()
+const { characters, filters } = useCharacters()
 
 const showModal = ref(false)
 const selectedPreference = ref<UserPreference | null>(null)
+const searchQuery = ref('')
+
+const updateSearch = useDebounceFn((value: string) => {
+  filters.value = value ? { name: value } : {}
+}, 300)
+
+const handleSearch = (event: Event) => {
+  const value = (event.target as HTMLInputElement).value
+  searchQuery.value = value
+  updateSearch(value)
+}
 
 const handleLogout = () => {
   logout(undefined, {
@@ -53,15 +71,43 @@ const openJsonView = (preference: UserPreference) => {
       </div>
 
       <div class="content">
-        <div class="preferences-container">
-          <h2>Your Preferences</h2>
-
-          <div v-if="isLoading" class="loading">Loading preferences...</div>
-          <div v-else-if="error" class="error">Error loading preferences: {{ error.message }}</div>
-          <div v-else-if="!preferences?.length" class="no-data">No preferences found.</div>
+        <div class="section">
+          <h2>Characters</h2>
+          <div class="search-container">
+            <input
+              type="search"
+              v-model="searchQuery"
+              @input="handleSearch"
+              placeholder="Search characters..."
+              class="search-input"
+            />
+          </div>
+          <table class="characters-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="character in characters" :key="character.id">
+                <td>{{ character.name }}</td>
+                <td>
+                  <span :class="['character-type', character.type]">{{ character.type }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="table-section">
-          <table class="preferences-table">
+
+        <div class="section">
+          <h2>Your Preferences</h2>
+          <div v-if="preferencesLoading" class="loading">Loading preferences...</div>
+          <div v-else-if="preferencesError" class="error">
+            Error loading preferences: {{ preferencesError.message }}
+          </div>
+          <div v-else-if="!preferences?.length" class="no-data">No preferences found.</div>
+          <table v-else class="preferences-table">
             <thead>
               <tr>
                 <th>Group</th>
@@ -181,6 +227,112 @@ main {
 .logout-button:hover:not(:disabled) {
   background-color: #b91c1c;
   transform: translateY(-1px);
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.section h2 {
+  color: var(--color-heading);
+  margin-bottom: 1.5rem;
+  font-size: 1.875rem;
+  font-weight: 600;
+}
+
+.search-container {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.characters-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-background);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.character-type {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.character-type.hero {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.character-type.villain {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.power-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--color-background-soft);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.power-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.power-fill.hero {
+  background: #3b82f6;
+}
+
+.power-fill.villain {
+  background: #ef4444;
+}
+
+.alignment {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.alignment.good {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.alignment.evil {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.alignment.neutral {
+  background: #f3f4f6;
+  color: #374151;
 }
 
 .preferences-container {
