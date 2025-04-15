@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useLogin, useOptionalUser } from '@/hooks/use-auth'
 
 const router = useRouter()
 const userId = ref('')
 
+const { data: user } = useOptionalUser()
+const { mutate: login, isPending } = useLogin()
+
 const handleSubmit = () => {
   if (userId.value.trim()) {
-    localStorage.setItem('userId', userId.value)
-    router.push('/')
+    login(userId.value, {
+      onSuccess: () => router.push('/'),
+    })
   }
 }
 
-onMounted(() => {
-  const storedUserId = localStorage.getItem('userId')
-  if (storedUserId) {
-    router.push('/')
-  }
-})
+// Redirect if already logged in
+if (user.value) {
+  router.push('/')
+}
 </script>
 
 <template>
@@ -34,9 +37,12 @@ onMounted(() => {
             required
             placeholder="Your User ID"
             autocomplete="off"
+            :disabled="isPending"
           />
         </div>
-        <button type="submit" :disabled="!userId.trim()">Login</button>
+        <button type="submit" :disabled="!userId.trim() || isPending">
+          {{ isPending ? 'Logging in...' : 'Login' }}
+        </button>
       </form>
     </div>
   </div>
@@ -82,6 +88,11 @@ input {
   border-radius: 4px;
   background: var(--color-background, #ffffff);
   color: var(--color-text, #374151);
+}
+
+input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 button {

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { useRequiredUser, useLogout } from '@/hooks/use-auth'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 
 const router = useRouter()
-const userId = ref('')
+const { user } = useRequiredUser()
+const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
 const { data: preferences, isLoading, error } = useUserPreferences()
 
@@ -21,18 +23,15 @@ const groupedPreferences = computed(() => {
   }, {})
 })
 
-onMounted(() => {
-  userId.value = localStorage.getItem('userId') || ''
-})
-
 const handleLogout = () => {
-  localStorage.removeItem('userId')
-  router.push('/login')
+  logout(undefined, {
+    onSuccess: () => router.push('/login'),
+  })
 }
 
 const formatPreference = (pref: UserPreference) => {
   // Remove common fields to make the output more concise
-  const { id, user, group, ...relevantData } = pref
+  const { id: _, user: __, group: ___, ...relevantData } = pref
   return JSON.stringify(relevantData, null, 2)
 }
 </script>
@@ -40,8 +39,10 @@ const formatPreference = (pref: UserPreference) => {
 <template>
   <main>
     <div class="user-info">
-      <span>Welcome, {{ userId }}</span>
-      <button @click="handleLogout" class="logout-button">Logout</button>
+      <span>Welcome, {{ user.id }}</span>
+      <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
+        {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+      </button>
     </div>
 
     <div class="preferences-container">
@@ -84,7 +85,12 @@ const formatPreference = (pref: UserPreference) => {
   font-weight: 500;
 }
 
-.logout-button:hover {
+.logout-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logout-button:hover:not(:disabled) {
   background-color: #b91c1c;
 }
 
