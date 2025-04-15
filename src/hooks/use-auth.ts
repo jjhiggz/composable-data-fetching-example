@@ -29,7 +29,6 @@ export const useRequiredUser = () => {
   }
 
   return {
-    ...rest,
     user: computed(() => user.value as User),
   }
 }

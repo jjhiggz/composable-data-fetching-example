@@ -1,11 +1,11 @@
 import { getUserPreferences, upsertUserPreference } from '@/fetch/get-user-preferences'
 import { useMutation, useQuery } from '@tanstack/vue-query'
-import { useRequiredUser } from './use-user'
+import { useRequiredUser } from './use-auth'
 export const useUserPreferences = () => {
-  const { userId } = useRequiredUser()
+  const { user } = useRequiredUser()
   const result = useQuery({
     queryKey: ['preferences'],
-    queryFn: () => getUserPreferences(userId),
+    queryFn: () => getUserPreferences(user.value.id),
   })
   return result
 }
