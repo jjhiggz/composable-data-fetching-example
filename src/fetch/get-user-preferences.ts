@@ -1,5 +1,5 @@
-import { Optional } from 'ts-toolbelt/out/Object/Optional'
-import { UserPreference } from './user-preference.types'
+import type { Optional } from 'ts-toolbelt/out/Object/Optional'
+import type { UserPreference } from '../user-preferences/user-preference.types'
 
 const throwIfNotOk = (message: string) => (response: Response) => {
   if (!response.ok) throw new Error(message)
