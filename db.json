@@ -35,6 +35,14 @@
       "group": "theme",
       "user": "sdf",
       "theme": "dark"
+    },
+    {
+      "id": "cab1",
+      "group": "first-time-modal",
+      "user": "sdf",
+      "seenModals": [
+        "balances"
+      ]
     }
   ]
 }

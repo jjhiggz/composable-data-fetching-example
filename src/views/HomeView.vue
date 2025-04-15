@@ -4,14 +4,17 @@ import { useRouter } from 'vue-router'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { useLogout, useOptionalUser } from '@/hooks/use-auth'
 import { useTheme } from '@/user-preferences/use-theme'
+import { useFirstTimeModal } from '@/user-preferences/use-first-time-modal'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 import JsonModal from '@/components/JsonModal.vue'
+import BalancesModal from '@/components/BalancesModal.vue'
 
 const router = useRouter()
 const { data: userData } = useOptionalUser()
 const { mutate: logout, isPending: isLoggingOut } = useLogout()
 const { data: preferences, isLoading, error } = useUserPreferences()
 const { themePreference, toggleTheme } = useTheme()
+const { currentlyOpenedModalType, closeForever, closeTemporarily } = useFirstTimeModal()
 
 const showModal = ref(false)
 const selectedPreference = ref<UserPreference | null>(null)
@@ -84,6 +87,11 @@ const openJsonView = (preference: UserPreference) => {
       </div>
     </div>
     <JsonModal v-model="showModal" :json-data="selectedPreference" />
+    <BalancesModal
+      v-if="currentlyOpenedModalType === 'balances'"
+      :on-close-forever="closeForever"
+      :on-close-temporarily="closeTemporarily"
+    />
   </main>
 </template>
 

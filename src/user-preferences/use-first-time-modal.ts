@@ -34,6 +34,9 @@ export const useFirstTimeModal = () => {
 
   const currentlyOpenedModalType = computed(() => {
     return allKnownModals.find((modalType) => {
+      if (preferencesQuery.isLoading) {
+        return false
+      }
       if (firstTimeModalPreference.value.seenModals.includes(modalType)) {
         return false
       }
