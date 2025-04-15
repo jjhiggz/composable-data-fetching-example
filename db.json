@@ -39,7 +39,9 @@
     {
       "group": "first-time-modal",
       "id": "cab1",
-      "seenModals": [],
+      "seenModals": [
+        "balances"
+      ],
       "user": "sdf"
     }
   ]
