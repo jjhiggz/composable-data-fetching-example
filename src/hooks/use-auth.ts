@@ -21,19 +21,6 @@ export const useOptionalUser = () => {
   })
 }
 
-export const useRequiredUser = () => {
-  const { data: user } = useOptionalUser()
-
-  return {
-    user: computed(() => {
-      if (!user.value) {
-        throw new Error('User is required but not found')
-      }
-      return user.value as User
-    }),
-  }
-}
-
 export const useLogin = () => {
   const queryClient = useQueryClient()
 

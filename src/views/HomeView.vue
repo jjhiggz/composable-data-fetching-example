@@ -1,36 +1,18 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
-import { useRequiredUser, useLogout } from '@/hooks/use-auth'
-import type {
-  UserPreference,
-  FirstTimeModalPreference,
-  ThemePreference,
-  PreferredPayment,
-} from '@/user-preferences/user-preference.types'
+import { useLogout, useOptionalUser } from '@/hooks/use-auth'
+import type { UserPreference } from '@/user-preferences/user-preference.types'
+import JsonModal from '@/components/JsonModal.vue'
 
 const router = useRouter()
-const { user } = useRequiredUser()
+const { data: userData } = useOptionalUser()
 const { mutate: logout, isPending: isLoggingOut } = useLogout()
 const { data: preferences, isLoading, error } = useUserPreferences()
 
 const showModal = ref(false)
 const selectedPreference = ref<UserPreference | null>(null)
-
-const preferencesByType = computed(() => {
-  if (!preferences.value) return {}
-
-  return {
-    firstTimeModals: preferences.value.filter(
-      (p): p is FirstTimeModalPreference => p.group === 'first-time-modal',
-    ),
-    themes: preferences.value.filter((p): p is ThemePreference => p.group === 'theme'),
-    payments: preferences.value.filter(
-      (p): p is PreferredPayment => p.group === 'preferred-payment',
-    ),
-  }
-})
 
 const handleLogout = () => {
   logout(undefined, {
@@ -47,7 +29,7 @@ const openJsonView = (preference: UserPreference) => {
 <template>
   <main>
     <div class="user-info">
-      <span>Welcome, {{ user.id }}</span>
+      <span>Welcome, {{ userData?.id ?? 'nobody' }}</span>
       <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
         {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
       </button>
@@ -82,7 +64,7 @@ const openJsonView = (preference: UserPreference) => {
         </tbody>
       </table>
     </div>
-    <JsonModal v-model="showModal" :data="selectedPreference" />
+    <JsonModal v-model="showModal" :json-data="selectedPreference" />
   </main>
 </template>
 

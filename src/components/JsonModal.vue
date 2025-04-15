@@ -1,38 +1,46 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { onClickOutside, onKeyStroke } from '@vueuse/core'
 
-const props = defineProps<{
+interface Props {
   modelValue: boolean
-  data: unknown
-}>()
-
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-}>()
-
-const formattedJson = computed(() => JSON.stringify(props.data, null, 2))
-
-const close = () => {
-  emit('update:modelValue', false)
+  jsonData: unknown
 }
+
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
+
+const modalContent = ref<HTMLElement | null>(null)
+
+const formattedJson = computed(() => {
+  try {
+    return typeof props.jsonData === 'string'
+      ? JSON.stringify(JSON.parse(props.jsonData), null, 2)
+      : JSON.stringify(props.jsonData, null, 2)
+  } catch {
+    return 'Invalid JSON'
+  }
+})
+
+const handleClose = () => emit('update:modelValue', false)
+
+onClickOutside(modalContent, handleClose)
+onKeyStroke('Escape', handleClose)
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="modelValue" class="modal-overlay" @click="close">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3>JSON View</h3>
-          <button class="close-button" @click="close">&times;</button>
-        </div>
-        <pre class="json-content">{{ formattedJson }}</pre>
-      </div>
+  <div class="modal-backdrop" id="modal">
+    <h1>Fucks</h1>
+    <div ref="modalContent" class="modal-content">
+      <pre>{{ formattedJson }}</pre>
     </div>
-  </Teleport>
+  </div>
 </template>
 
 <style scoped>
-.modal-overlay {
+.modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -46,46 +54,17 @@ const close = () => {
 }
 
 .modal-content {
-  background: var(--color-background);
+  background: white;
+  padding: 2rem;
   border-radius: 8px;
-  padding: 1.5rem;
-  max-width: 90%;
-  max-height: 90vh;
-  width: 600px;
+  max-width: 80%;
+  max-height: 80%;
   overflow: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.modal-header h3 {
+pre {
   margin: 0;
-  color: var(--color-heading);
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--color-text);
-  padding: 0.25rem 0.5rem;
-  line-height: 1;
-}
-
-.json-content {
-  margin: 0;
-  padding: 1rem;
-  background: var(--color-background-soft);
-  border-radius: 4px;
-  overflow: auto;
-  font-family: monospace;
   white-space: pre-wrap;
-  word-break: break-all;
+  word-wrap: break-word;
 }
 </style>

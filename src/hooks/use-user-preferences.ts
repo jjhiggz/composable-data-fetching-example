@@ -1,12 +1,17 @@
 import { getUserPreferences, upsertUserPreference } from '@/fetch/get-user-preferences'
 import { useMutation, useQuery } from '@tanstack/vue-query'
-import { useRequiredUser } from './use-auth'
+import { useOptionalUser } from './use-auth'
+import { computed } from 'vue'
+
 export const useUserPreferences = () => {
-  const { user } = useRequiredUser()
+  const { data } = useOptionalUser()
+  const userId = computed(() => data.value?.id ?? '')
+
   const result = useQuery({
-    queryKey: ['preferences'],
-    queryFn: () => getUserPreferences(user.value.id),
+    queryKey: ['preferences', userId],
+    queryFn: () => getUserPreferences(userId.value),
   })
+
   return result
 }
 
@@ -18,5 +23,6 @@ export const createUserPreference = () => {
       refetch()
     },
   })
+
   return mutation
 }

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.74.3",
+    "@vueuse/core": "^13.1.0",
     "json-server": "^1.0.0-beta.3",
     "ts-toolbelt": "^9.6.0",
     "vue": "^3.5.13",
