@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useLogout } from '@/hooks/use-auth'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+const logout = useLogout()
 
 const router = useRouter()
 const userId = ref('')
@@ -10,7 +12,7 @@ onMounted(() => {
 })
 
 const handleLogout = () => {
-  const { id: _, user: __, group: ___, ...relevantData } = pref
+  logout.mutate()
   router.push('/login')
 }
 </script>
