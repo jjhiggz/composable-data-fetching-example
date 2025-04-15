@@ -5,11 +5,12 @@ import { useUserPreferences } from '@/user-preferences/use-user-preferences'
 import { useLogout, useOptionalUser } from '@/hooks/use-auth'
 import { useTheme } from '@/user-preferences/use-theme'
 import { useFirstTimeModal } from '@/user-preferences/use-first-time-modal'
-import { useCharacters } from '@/user-preferences/characters/use-characters'
 import { useDebounceFn } from '@vueuse/core'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 import JsonModal from '@/components/JsonModal.vue'
 import BalancesModal from '@/components/BalancesModal.vue'
+import type { CharacterFiltersPartial } from '@/user-preferences/characters/get-character'
+import { useCharacters } from '@/user-preferences/characters/use-characters'
 
 const router = useRouter()
 const { data: userData } = useOptionalUser()
@@ -21,19 +22,39 @@ const {
 } = useUserPreferences()
 const { themePreference, toggleTheme } = useTheme()
 const { currentlyOpenedModalType, closeForever, closeTemporarily } = useFirstTimeModal()
-const { characters, filters } = useCharacters()
+const charactersQuery = useCharacters()
 
 const showModal = ref(false)
 const selectedPreference = ref<UserPreference | null>(null)
 const searchQuery = ref('')
 
 const updateSearch = useDebounceFn((value: string) => {
-  filters.value = value ? { name: value } : {}
+  const newObject: CharacterFiltersPartial = {}
+  if (value) {
+    newObject.name = value
+  }
+  charactersQuery.filters.value = newObject
 }, 300)
+
+const applyFilter = (type: 'alive-female' | 'dead-rick') => {
+  switch (type) {
+    case 'alive-female':
+      charactersQuery.filters.value = {
+        gender: 'female',
+        status: 'alive',
+      }
+      break
+    case 'dead-rick':
+      charactersQuery.filters.value = {
+        name: 'rick',
+        status: 'dead',
+      }
+      break
+  }
+}
 
 const handleSearch = (event: Event) => {
   const value = (event.target as HTMLInputElement).value
-  searchQuery.value = value
   updateSearch(value)
 }
 
@@ -73,6 +94,12 @@ const openJsonView = (preference: UserPreference) => {
       <div class="content">
         <div class="section">
           <h2>Characters</h2>
+          <div class="filter-buttons">
+            <button class="filter-button" @click="applyFilter('alive-female')">
+              Alive Females
+            </button>
+            <button class="filter-button" @click="applyFilter('dead-rick')">Dead Ricks</button>
+          </div>
           <div class="search-container">
             <input
               type="search"
@@ -82,16 +109,30 @@ const openJsonView = (preference: UserPreference) => {
               class="search-input"
             />
           </div>
-          <table class="characters-table">
+          <div v-if="charactersQuery.query.isLoading.value" class="loading">
+            Loading characters...
+          </div>
+          <div v-else-if="charactersQuery.query.error.value" class="error">
+            Error loading characters: {{ charactersQuery.query.error.value?.message }}
+          </div>
+          <table v-else class="characters-table">
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Status</th>
+                <th>Gender</th>
                 <th>Type</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="character in characters" :key="character.id">
+              <tr v-for="character in charactersQuery.query.data.value" :key="character.id">
                 <td>{{ character.name }}</td>
+                <td>
+                  <span :class="['status-badge', character.status.toLowerCase()]">
+                    {{ character.status }}
+                  </span>
+                </td>
+                <td>{{ character.gender }}</td>
                 <td>
                   <span :class="['character-type', character.type]">{{ character.type }}</span>
                 </td>
@@ -411,6 +452,53 @@ tr:hover td {
 .view-json-button:hover {
   background: #1d4ed8;
   transform: translateY(-1px);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-button {
+  padding: 0.5rem 1rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-button:hover {
+  background: var(--color-background-soft);
+  transform: translateY(-1px);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.alive {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.dead {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.unknown {
+  background: #f3f4f6;
+  color: #374151;
 }
 
 :root {

@@ -3,7 +3,9 @@
     {
       "group": "first-time-modal",
       "id": "pref1",
-      "seenModals": [],
+      "seenModals": [
+        "balances"
+      ],
       "user": "user123"
     },
     {
