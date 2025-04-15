@@ -1,5 +1,9 @@
 import { createUserPreference, useUserPreferences } from '@/hooks/use-user-preferences'
-import type { FirstTimeModalPreference, KnownModals } from './user-preference.types'
+import {
+  allKnownModals,
+  type FirstTimeModalPreference,
+  type KnownModal,
+} from './user-preference.types'
 import { computed, ref, type ComputedRef } from 'vue'
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'
 import { useOptionalUser } from '@/hooks/use-auth'
@@ -8,7 +12,7 @@ export const useFirstTimeModal = () => {
   const preferencesQuery = useUserPreferences()
   const { mutateAsync: updateUserPreference } = createUserPreference()
   const { data: userData } = useOptionalUser()
-  const temporarilyClosed = ref<KnownModals[]>([])
+  const temporarilyClosed = ref<KnownModal[]>([])
 
   type FirstTimeModalPreferenceOptional = Optional<FirstTimeModalPreference, 'id'>
   const firstTimeModalPreference: ComputedRef<FirstTimeModalPreferenceOptional> = computed(() => {
@@ -28,22 +32,19 @@ export const useFirstTimeModal = () => {
     }
   })
 
-  const isModalMap = computed(() => {
-    const seenModals = firstTimeModalPreference.value.seenModals
-
-    // @ts-expect-error KnownModals is an enum, Object.values returns unknown[]
-    return Object.values(KnownModals).reduce(
-      (acc, modalId) => ({
-        // @ts-expect-error KnownModals is an enum, Object.values returns unknown[]
-        ...acc,
-        // @ts-expect-error KnownModals is an enum, Object.values returns unknown[]
-        [modalId]: !seenModals.includes(modalId) && !temporarilyClosed.value.includes(modalId),
-      }),
-      {} as Record<KnownModals, boolean>,
-    )
+  const currentlyOpenedModalType = computed(() => {
+    return allKnownModals.find((modalType) => {
+      if (firstTimeModalPreference.value.seenModals.includes(modalType)) {
+        return false
+      }
+      if (temporarilyClosed.value.includes(modalType)) {
+        return false
+      }
+      return true
+    })
   })
 
-  const closeForever = async (modalId: KnownModals) => {
+  const closeForever = async (modalId: KnownModal) => {
     const updatedSeenModals = [...firstTimeModalPreference.value.seenModals, modalId]
     await updateUserPreference({
       ...firstTimeModalPreference.value,
@@ -51,14 +52,14 @@ export const useFirstTimeModal = () => {
     })
   }
 
-  const closeTemporarily = (modalId: KnownModals) => {
+  const closeTemporarily = (modalId: KnownModal) => {
     temporarilyClosed.value = [...temporarilyClosed.value, modalId]
   }
 
   return {
     firstTimeModalPreference,
-    isModalMap,
     closeForever,
     closeTemporarily,
+    currentlyOpenedModalType,
   }
 }

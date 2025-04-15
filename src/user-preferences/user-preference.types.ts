@@ -6,13 +6,14 @@ type UserPreferenceBase = {
   user: string
 }
 
-export type KnownModals = 'balances' | 'scheduled-payment'
+export const allKnownModals = ['balances', 'scheduled-payment']
+export type KnownModal = (typeof allKnownModals)[number]
 
 export interface FirstTimeModalPreference extends UserPreferenceBase {
   id: string
   user: string
   group: 'first-time-modal'
-  seenModals: KnownModals[]
+  seenModals: KnownModal[]
 }
 
 export interface ThemePreference extends UserPreferenceBase {
