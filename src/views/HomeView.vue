@@ -59,93 +59,29 @@ const openJsonView = (preference: UserPreference) => {
       <div v-if="isLoading" class="loading">Loading preferences...</div>
       <div v-else-if="error" class="error">Error loading preferences: {{ error.message }}</div>
       <div v-else-if="!preferences?.length" class="no-data">No preferences found.</div>
-
-      <template v-else>
-        <!-- First Time Modals Table -->
-        <div v-if="preferencesByType.firstTimeModals.length" class="table-section">
-          <h3>First Time Modals</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Seen Modals</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="pref in preferencesByType.firstTimeModals" :key="pref.id">
-                  <td>{{ pref.id }}</td>
-                  <td>
-                    <span v-for="modal in pref.seenModals" :key="modal" class="tag">
-                      {{ modal }}
-                    </span>
-                  </td>
-                  <td>
-                    <button class="view-json-button" @click="openJsonView(pref)">View JSON</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Theme Preferences Table -->
-        <div v-if="preferencesByType.themes.length" class="table-section">
-          <h3>Theme Preferences</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Theme</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="pref in preferencesByType.themes" :key="pref.id">
-                  <td>{{ pref.id }}</td>
-                  <td>
-                    <span class="tag" :class="pref.theme">{{ pref.theme }}</span>
-                  </td>
-                  <td>
-                    <button class="view-json-button" @click="openJsonView(pref)">View JSON</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Payment Preferences Table -->
-        <div v-if="preferencesByType.payments.length" class="table-section">
-          <h3>Payment Preferences</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Preferred Method</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="pref in preferencesByType.payments" :key="pref.id">
-                  <td>{{ pref.id }}</td>
-                  <td>
-                    <span class="tag payment">{{ pref.preferredPaymentMethod }}</span>
-                  </td>
-                  <td>
-                    <button class="view-json-button" @click="openJsonView(pref)">View JSON</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </template>
     </div>
-
+    <div class="table-section">
+      <table class="preferences-table">
+        <thead>
+          <tr>
+            <th>Group</th>
+            <th>ID</th>
+            <th>User</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="preference in preferences" :key="preference.id">
+            <td>{{ preference.group }}</td>
+            <td>{{ preference.id }}</td>
+            <td>{{ preference.user }}</td>
+            <td>
+              <button @click="openJsonView(preference)" class="view-json-button">View JSON</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <JsonModal v-model="showModal" :data="selectedPreference" />
   </main>
 </template>
