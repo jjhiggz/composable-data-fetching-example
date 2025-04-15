@@ -8,7 +8,11 @@ import { computed, ref, type ComputedRef } from 'vue'
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'
 import { useOptionalUser } from '@/hooks/use-auth'
 
-export const useFirstTimeModal = () => {
+export const useFirstTimeModal = ({
+  closeMode = 'show-in-sequence',
+}: {
+  closeMode?: 'show-in-sequence' | 'only-show-one'
+} = {}) => {
   const preferencesQuery = useUserPreferences()
   const { mutateAsync: updateUserPreference } = createUserPreference()
   const { data: userData } = useOptionalUser()
@@ -34,7 +38,7 @@ export const useFirstTimeModal = () => {
 
   const currentlyOpenedModalType = computed(() => {
     return allKnownModals.find((modalType) => {
-      if (preferencesQuery.isLoading) {
+      if (preferencesQuery.isLoading.value) {
         return false
       }
       if (firstTimeModalPreference.value.seenModals.includes(modalType)) {
@@ -53,6 +57,9 @@ export const useFirstTimeModal = () => {
       ...firstTimeModalPreference.value,
       seenModals: updatedSeenModals,
     })
+    if (closeMode === 'only-show-one') {
+      temporarilyClosed.value = allKnownModals
+    }
   }
 
   const closeTemporarily = (modalId: KnownModal) => {

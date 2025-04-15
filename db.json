@@ -31,18 +31,16 @@
       "user": "user456"
     },
     {
-      "id": "cb7b",
       "group": "theme",
-      "user": "sdf",
-      "theme": "dark"
+      "id": "cb7b",
+      "theme": "dark",
+      "user": "sdf"
     },
     {
-      "id": "cab1",
       "group": "first-time-modal",
-      "user": "sdf",
-      "seenModals": [
-        "balances"
-      ]
+      "id": "cab1",
+      "seenModals": [],
+      "user": "sdf"
     }
   ]
 }
