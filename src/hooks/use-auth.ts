@@ -22,14 +22,15 @@ export const useOptionalUser = () => {
 }
 
 export const useRequiredUser = () => {
-  const { data: user, ...rest } = useOptionalUser()
-
-  if (!user.value) {
-    throw new Error('User is required but not found')
-  }
+  const { data: user } = useOptionalUser()
 
   return {
-    user: computed(() => user.value as User),
+    user: computed(() => {
+      if (!user.value) {
+        throw new Error('User is required but not found')
+      }
+      return user.value as User
+    }),
   }
 }
 
