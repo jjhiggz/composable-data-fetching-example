@@ -30,64 +30,94 @@ const openJsonView = (preference: UserPreference) => {
 
 <template>
   <main :class="themePreference.theme">
-    <div class="user-info">
-      <div class="user-controls">
-        <button
-          class="theme-toggle"
-          @click="toggleTheme"
-          :title="
-            themePreference.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
-          "
-        >
-          {{ themePreference.theme === 'dark' ? '🌞' : '🌙' }}
-        </button>
-        <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
-          {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
-        </button>
+    <div class="container">
+      <div class="user-info">
+        <div class="user-controls">
+          <button
+            class="theme-toggle"
+            @click="toggleTheme"
+            :title="
+              themePreference.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+            "
+          >
+            {{ themePreference.theme === 'dark' ? '🌞' : '🌙' }}
+          </button>
+          <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
+            {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+          </button>
+        </div>
+        <span class="welcome-text">Welcome, {{ userData?.id ?? 'nobody' }}</span>
       </div>
-      <span>Welcome, {{ userData?.id ?? 'nobody' }}</span>
-    </div>
 
-    <div class="preferences-container">
-      <h2>Your Preferences</h2>
+      <div class="content">
+        <div class="preferences-container">
+          <h2>Your Preferences</h2>
 
-      <div v-if="isLoading" class="loading">Loading preferences...</div>
-      <div v-else-if="error" class="error">Error loading preferences: {{ error.message }}</div>
-      <div v-else-if="!preferences?.length" class="no-data">No preferences found.</div>
-    </div>
-    <div class="table-section">
-      <table class="preferences-table">
-        <thead>
-          <tr>
-            <th>Group</th>
-            <th>ID</th>
-            <th>User</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="preference in preferences" :key="preference.id">
-            <td>{{ preference.group }}</td>
-            <td>{{ preference.id }}</td>
-            <td>{{ preference.user }}</td>
-            <td>
-              <button @click="openJsonView(preference)" class="view-json-button">View JSON</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          <div v-if="isLoading" class="loading">Loading preferences...</div>
+          <div v-else-if="error" class="error">Error loading preferences: {{ error.message }}</div>
+          <div v-else-if="!preferences?.length" class="no-data">No preferences found.</div>
+        </div>
+        <div class="table-section">
+          <table class="preferences-table">
+            <thead>
+              <tr>
+                <th>Group</th>
+                <th>ID</th>
+                <th>User</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="preference in preferences" :key="preference.id">
+                <td>{{ preference.group }}</td>
+                <td>{{ preference.id }}</td>
+                <td>{{ preference.user }}</td>
+                <td>
+                  <button @click="openJsonView(preference)" class="view-json-button">
+                    View JSON
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <JsonModal v-model="showModal" :json-data="selectedPreference" />
   </main>
 </template>
 
 <style scoped>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.content {
+  background: var(--color-background-soft);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
 .user-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  gap: 1rem;
+  background: var(--color-background-soft);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-text {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-heading);
 }
 
 .user-controls {
@@ -97,18 +127,130 @@ const openJsonView = (preference: UserPreference) => {
 }
 
 .theme-toggle {
-  background: none;
-  border: none;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 9999px;
   line-height: 1;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .theme-toggle:hover {
   background: var(--color-background-soft);
+  transform: scale(1.05);
+}
+
+main {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  transition: all 0.3s;
+}
+
+.logout-button {
+  padding: 0.625rem 1.25rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.logout-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logout-button:hover:not(:disabled) {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.preferences-container {
+  margin-bottom: 2rem;
+}
+
+.preferences-container h2 {
+  color: var(--color-heading);
+  margin-bottom: 2rem;
+  font-size: 1.875rem;
+  font-weight: 600;
+}
+
+.loading,
+.error,
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text);
+  background: var(--color-background);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.error {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-background);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  background: var(--color-background);
+  font-weight: 600;
+  color: var(--color-heading);
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: var(--color-background-soft);
+}
+
+.view-json-button {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-json-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 :root {
@@ -125,135 +267,5 @@ const openJsonView = (preference: UserPreference) => {
   --color-text: #e5e7eb;
   --color-heading: #f3f4f6;
   --color-border: #4b5563;
-}
-
-main {
-  min-height: 100vh;
-  background: var(--color-background);
-  color: var(--color-text);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-}
-
-.logout-button {
-  padding: 0.5rem 1rem;
-  background-color: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.logout-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.logout-button:hover:not(:disabled) {
-  background-color: #b91c1c;
-}
-
-.preferences-container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.preferences-container h2 {
-  color: var(--color-heading);
-  margin-bottom: 2rem;
-}
-
-.table-section {
-  margin-bottom: 2rem;
-  padding: 0 1rem;
-}
-
-.table-section h3 {
-  color: var(--color-heading);
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-}
-
-.loading,
-.error,
-.no-data {
-  text-align: center;
-  padding: 2rem;
-  color: var(--color-text);
-}
-
-.error {
-  color: #dc2626;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--color-background-soft);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-th,
-td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--color-border);
-}
-
-th {
-  background: var(--color-background);
-  font-weight: 600;
-  color: var(--color-heading);
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-.view-json-button {
-  padding: 0.5rem 1rem;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.view-json-button:hover {
-  background: #1d4ed8;
-}
-
-.tag {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  margin-right: 0.5rem;
-  background: var(--color-background);
-  color: var(--color-text);
-}
-
-.tag.light {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.tag.dark {
-  background: #374151;
-  color: #f9fafb;
-}
-
-.tag.payment {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.tag:last-child {
-  margin-right: 0;
 }
 </style>

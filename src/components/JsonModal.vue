@@ -36,7 +36,7 @@ onKeyStroke('Escape', handleClose)
       <div ref="modalContent" class="modal-content" @click.stop>
         <div class="modal-header">
           <h3>JSON View</h3>
-          <button class="close-button" @click="handleClose">&times;</button>
+          <button class="close-button" @click="handleClose" title="Close modal">&times;</button>
         </div>
         <div class="modal-body">
           <pre>{{ formattedJson }}</pre>
@@ -63,20 +63,36 @@ onKeyStroke('Escape', handleClose)
 
 .modal-content {
   background: var(--color-background);
-  border-radius: 8px;
-  max-width: 80%;
-  max-height: 80vh;
-  width: 600px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90vh;
+  width: 800px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   border: 1px solid var(--color-border);
+  transform: translateY(0);
+  transition: transform 0.2s ease-out;
+  animation: modal-in 0.2s ease-out;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-background-soft);
 }
@@ -85,27 +101,35 @@ onKeyStroke('Escape', handleClose)
   margin: 0;
   color: var(--color-heading);
   font-weight: 600;
+  font-size: 1.25rem;
 }
 
 .close-button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   color: var(--color-text);
-  border-radius: 4px;
+  border-radius: 6px;
   line-height: 1;
+  transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-button:hover {
   background: var(--color-background);
+  transform: scale(1.05);
 }
 
 .modal-body {
-  padding: 1rem;
+  padding: 1.5rem;
   overflow: auto;
-  max-height: calc(80vh - 4rem);
+  max-height: calc(90vh - 5rem);
   background: var(--color-background);
 }
 
@@ -114,8 +138,12 @@ pre {
   white-space: pre-wrap;
   word-wrap: break-word;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   color: var(--color-text);
+  background: var(--color-background-soft);
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
 }
 </style>
