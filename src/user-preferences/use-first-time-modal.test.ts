@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
-  computeFirstTimeModalPreference,
-  computeCurrentlyOpenedModalType,
-  getCloseForeverDTO,
+  _computeFirstTimeModalPreference,
+  _computeCurrentlyOpenedModalType,
+  _getCloseForeverDTO,
 } from './use-first-time-modal'
 import {
   allKnownModals,
@@ -18,7 +18,7 @@ describe('computeFirstTimeModalPreference', () => {
 
   it('throws error when user is not provided', () => {
     expect(() =>
-      computeFirstTimeModalPreference({
+      _computeFirstTimeModalPreference({
         userData: null,
         userPreferences: [],
       }),
@@ -33,7 +33,7 @@ describe('computeFirstTimeModalPreference', () => {
       preferences: [{ key: 'balances', value: 'true' }],
     }
 
-    const result = computeFirstTimeModalPreference({
+    const result = _computeFirstTimeModalPreference({
       userData: mockUser,
       userPreferences: [existingPreference],
     })
@@ -42,7 +42,7 @@ describe('computeFirstTimeModalPreference', () => {
   })
 
   it('returns new modal preference when none exists', () => {
-    const result = computeFirstTimeModalPreference({
+    const result = _computeFirstTimeModalPreference({
       userData: mockUser,
       userPreferences: [],
     })
@@ -63,7 +63,7 @@ describe('computeCurrentlyOpenedModalType', () => {
   }
 
   it('returns undefined when loading', () => {
-    const result = computeCurrentlyOpenedModalType({
+    const result = _computeCurrentlyOpenedModalType({
       isLoading: true,
       firstTimeModalPreference: basePreference,
       temporarilyClosed: [],
@@ -73,7 +73,7 @@ describe('computeCurrentlyOpenedModalType', () => {
   })
 
   it('returns first unclosed modal', () => {
-    const result = computeCurrentlyOpenedModalType({
+    const result = _computeCurrentlyOpenedModalType({
       isLoading: false,
       firstTimeModalPreference: basePreference,
       temporarilyClosed: [],
@@ -89,7 +89,7 @@ describe('computeCurrentlyOpenedModalType', () => {
       preferences: [{ key: 'balances' as KnownModal, value: 'true' }],
     }
 
-    const result = computeCurrentlyOpenedModalType({
+    const result = _computeCurrentlyOpenedModalType({
       isLoading: false,
       firstTimeModalPreference: preference,
       temporarilyClosed: [],
@@ -100,7 +100,7 @@ describe('computeCurrentlyOpenedModalType', () => {
   })
 
   it('skips temporarily closed modals', () => {
-    const result = computeCurrentlyOpenedModalType({
+    const result = _computeCurrentlyOpenedModalType({
       isLoading: false,
       firstTimeModalPreference: basePreference,
       temporarilyClosed: ['balances' as KnownModal],
@@ -116,7 +116,7 @@ describe('computeCurrentlyOpenedModalType', () => {
       preferences: [{ key: 'balances' as KnownModal, value: 'true' }],
     }
 
-    const result = computeCurrentlyOpenedModalType({
+    const result = _computeCurrentlyOpenedModalType({
       isLoading: false,
       firstTimeModalPreference: preference,
       temporarilyClosed: allKnownModals,
@@ -135,7 +135,7 @@ describe('getCloseForeverDTO', () => {
       preferences: [],
     }
 
-    const result = getCloseForeverDTO({
+    const result = _getCloseForeverDTO({
       modalId: 'balances' as KnownModal,
       existingPreference,
     })
@@ -154,7 +154,7 @@ describe('getCloseForeverDTO', () => {
       preferences: [{ key: 'other-modal' as KnownModal, value: 'true' }],
     }
 
-    const result = getCloseForeverDTO({
+    const result = _getCloseForeverDTO({
       modalId: 'balances' as KnownModal,
       existingPreference,
     })
@@ -172,7 +172,7 @@ describe('getCloseForeverDTO', () => {
       preferences: [],
     }
 
-    const result = getCloseForeverDTO({
+    const result = _getCloseForeverDTO({
       modalId: 'balances' as KnownModal,
       existingPreference,
     })

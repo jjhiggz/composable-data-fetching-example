@@ -12,7 +12,7 @@ import { useOptionalUser, type User } from '@/hooks/use-auth'
 type FirstTimeModalPreferenceOptional = Optional<FirstTimeModalPreference, 'id'>
 
 // Separated logic, can be tested
-export const computeFirstTimeModalPreference = ({
+export const _computeFirstTimeModalPreference = ({
   userData,
   userPreferences,
 }: {
@@ -36,7 +36,7 @@ export const computeFirstTimeModalPreference = ({
 }
 
 // Separated logic, can be tested
-export const computeCurrentlyOpenedModalType = ({
+export const _computeCurrentlyOpenedModalType = ({
   isLoading,
   firstTimeModalPreference,
   temporarilyClosed,
@@ -59,7 +59,7 @@ export const computeCurrentlyOpenedModalType = ({
 }
 
 // Separated logic, can be tested
-export const getCloseForeverDTO = ({
+export const _getCloseForeverDTO = ({
   modalId,
   existingPreference,
 }: {
@@ -83,14 +83,14 @@ export const useFirstTimeModal = ({
   const temporarilyClosed = ref<KnownModal[]>([])
 
   const firstTimeModalPreference = computed(() =>
-    computeFirstTimeModalPreference({
+    _computeFirstTimeModalPreference({
       userData: userData.value,
       userPreferences: preferencesQuery.data?.value,
     }),
   )
 
   const currentlyOpenedModalType = computed(() =>
-    computeCurrentlyOpenedModalType({
+    _computeCurrentlyOpenedModalType({
       isLoading: preferencesQuery.isLoading.value,
       firstTimeModalPreference: firstTimeModalPreference.value,
       temporarilyClosed: temporarilyClosed.value,
@@ -99,7 +99,7 @@ export const useFirstTimeModal = ({
 
   const closeForever = async (modalId: KnownModal) => {
     await updateUserPreference(
-      getCloseForeverDTO({
+      _getCloseForeverDTO({
         modalId,
         existingPreference: firstTimeModalPreference.value,
       }),
