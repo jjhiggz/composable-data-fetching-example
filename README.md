@@ -26,6 +26,12 @@ npm install
 npm run dev
 ```
 
+### Run JSON Server
+
+```sh
+npx json-server --watch db.json
+```
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
