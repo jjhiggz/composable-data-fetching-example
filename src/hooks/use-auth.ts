@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { computed } from 'vue'
 
 export interface User {
   id: string
