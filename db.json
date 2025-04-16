@@ -21,6 +21,17 @@
           "value": "dark"
         }
       ]
+    },
+    {
+      "id": "9216",
+      "group": "first-time-modal",
+      "user": "user",
+      "preferences": [
+        {
+          "key": "balances",
+          "value": "true"
+        }
+      ]
     }
   ]
 }

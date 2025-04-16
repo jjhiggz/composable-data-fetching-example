@@ -3,10 +3,74 @@ import {
   allKnownModals,
   type FirstTimeModalPreference,
   type KnownModal,
+  type UserPreference,
 } from './user-preference.types'
 import { computed, ref, type ComputedRef } from 'vue'
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'
-import { useOptionalUser } from '@/hooks/use-auth'
+import { useOptionalUser, type User } from '@/hooks/use-auth'
+
+type FirstTimeModalPreferenceOptional = Optional<FirstTimeModalPreference, 'id'>
+
+// Separated logic, can be tested
+export const computeFirstTimeModalPreference = ({
+  userData,
+  userPreferences,
+}: {
+  userData: User | null | undefined
+  userPreferences: UserPreference[] | undefined
+}): FirstTimeModalPreferenceOptional => {
+  if (!userData) {
+    throw new Error('Cannot use first time modal preference without user')
+  }
+  const existingPreference = userPreferences?.find(
+    (preference) => preference.group === 'first-time-modal',
+  ) as FirstTimeModalPreference | undefined
+  if (existingPreference) {
+    return existingPreference
+  }
+  return {
+    group: 'first-time-modal',
+    user: userData.id,
+    preferences: [],
+  }
+}
+
+// Separated logic, can be tested
+export const computeCurrentlyOpenedModalType = ({
+  isLoading,
+  firstTimeModalPreference,
+  temporarilyClosed,
+}: {
+  isLoading: boolean
+  firstTimeModalPreference: FirstTimeModalPreferenceOptional
+  temporarilyClosed: KnownModal[]
+}): KnownModal | undefined => {
+  if (isLoading) {
+    return undefined
+  }
+
+  return allKnownModals.find((modalType) => {
+    const isClosedForever = firstTimeModalPreference.preferences.some(
+      (pref) => pref.key === modalType && pref.value === 'true',
+    )
+    const isClosedTemporarily = temporarilyClosed.includes(modalType)
+    return !isClosedForever && !isClosedTemporarily
+  })
+}
+
+// Separated logic, can be tested
+export const getCloseForeverDTO = ({
+  modalId,
+  existingPreference,
+}: {
+  modalId: KnownModal
+  existingPreference: FirstTimeModalPreferenceOptional
+}): FirstTimeModalPreferenceOptional => {
+  return {
+    ...existingPreference,
+    preferences: [...existingPreference.preferences, { key: modalId, value: 'true' }],
+  }
+}
 
 export const useFirstTimeModal = ({
   closeMode = 'show-in-sequence',
@@ -18,48 +82,28 @@ export const useFirstTimeModal = ({
   const { data: userData } = useOptionalUser()
   const temporarilyClosed = ref<KnownModal[]>([])
 
-  type FirstTimeModalPreferenceOptional = Optional<FirstTimeModalPreference, 'id'>
-  const firstTimeModalPreference: ComputedRef<FirstTimeModalPreferenceOptional> = computed(() => {
-    if (!userData.value) {
-      throw new Error('Cannot use first time modal preference without user')
-    }
-    const existingPreference = preferencesQuery.data?.value?.find(
-      (preference) => preference.group === 'first-time-modal',
-    )
-    if (existingPreference) {
-      return existingPreference as FirstTimeModalPreference
-    }
-    return {
-      group: 'first-time-modal',
-      user: userData.value.id,
-      preferences: [],
-    }
-  })
+  const firstTimeModalPreference = computed(() =>
+    computeFirstTimeModalPreference({
+      userData: userData.value,
+      userPreferences: preferencesQuery.data?.value,
+    }),
+  )
 
-  const currentlyOpenedModalType = computed(() => {
-    return allKnownModals.find((modalType) => {
-      if (preferencesQuery.isLoading.value) {
-        return false
-      }
-      if (
-        firstTimeModalPreference.value.preferences.some(
-          (pref) => pref.key === modalType && pref.value === 'true',
-        )
-      ) {
-        return false
-      }
-      if (temporarilyClosed.value.includes(modalType)) {
-        return false
-      }
-      return true
-    })
-  })
+  const currentlyOpenedModalType = computed(() =>
+    computeCurrentlyOpenedModalType({
+      isLoading: preferencesQuery.isLoading.value,
+      firstTimeModalPreference: firstTimeModalPreference.value,
+      temporarilyClosed: temporarilyClosed.value,
+    }),
+  )
 
   const closeForever = async (modalId: KnownModal) => {
-    await updateUserPreference({
-      ...firstTimeModalPreference.value,
-      preferences: [...firstTimeModalPreference.value.preferences, { key: modalId, value: 'true' }],
-    })
+    await updateUserPreference(
+      getCloseForeverDTO({
+        modalId,
+        existingPreference: firstTimeModalPreference.value,
+      }),
+    )
     if (closeMode === 'only-show-one') {
       temporarilyClosed.value = allKnownModals
     }
