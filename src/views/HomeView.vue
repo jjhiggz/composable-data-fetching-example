@@ -9,8 +9,8 @@ import { useDebounceFn } from '@vueuse/core'
 import type { UserPreference } from '@/user-preferences/user-preference.types'
 import JsonModal from '@/components/JsonModal.vue'
 import BalancesModal from '@/components/BalancesModal.vue'
-import type { CharacterFiltersPartial } from '@/user-preferences/characters/get-character'
-import { useCharacters } from '@/user-preferences/characters/use-characters'
+import type { CharacterFiltersPartial } from '@/characters/get-character'
+import { useCharacters } from '@/characters/use-characters'
 
 const router = useRouter()
 const { data: userData } = useOptionalUser()
