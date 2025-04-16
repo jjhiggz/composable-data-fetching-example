@@ -32,7 +32,7 @@ export const useFirstTimeModal = ({
     return {
       group: 'first-time-modal',
       user: userData.value.id,
-      seenModals: [],
+      preferences: [],
     }
   })
 
@@ -41,7 +41,11 @@ export const useFirstTimeModal = ({
       if (preferencesQuery.isLoading.value) {
         return false
       }
-      if (firstTimeModalPreference.value.seenModals.includes(modalType)) {
+      if (
+        firstTimeModalPreference.value.preferences.some(
+          (pref) => pref.key === modalType && pref.value === 'true',
+        )
+      ) {
         return false
       }
       if (temporarilyClosed.value.includes(modalType)) {
@@ -52,10 +56,9 @@ export const useFirstTimeModal = ({
   })
 
   const closeForever = async (modalId: KnownModal) => {
-    const updatedSeenModals = [...firstTimeModalPreference.value.seenModals, modalId]
     await updateUserPreference({
       ...firstTimeModalPreference.value,
-      seenModals: updatedSeenModals,
+      preferences: [...firstTimeModalPreference.value.preferences, { key: modalId, value: 'true' }],
     })
     if (closeMode === 'only-show-one') {
       temporarilyClosed.value = allKnownModals

@@ -1,9 +1,8 @@
-import type { Optional } from 'ts-toolbelt/out/Object/Optional'
-
 type UserPreferenceBase = {
   id: string
   group: string
   user: string
+  preferences: { key: string; value: string }[]
 }
 
 export const allKnownModals = ['balances', 'scheduled-payment']
@@ -13,21 +12,25 @@ export interface FirstTimeModalPreference extends UserPreferenceBase {
   id: string
   user: string
   group: 'first-time-modal'
-  seenModals: KnownModal[]
+  preferences: { key: KnownModal; value: 'true' | 'false' }[]
 }
 
 export interface ThemePreference extends UserPreferenceBase {
   id: string
   user: string
   group: 'theme'
-  theme: 'light' | 'dark'
+  preferences: { key: 'theme'; value: 'light' | 'dark' }[]
 }
 
+type KnownCurrency = 'USD' | 'EU' | 'AUD' | 'GBP'
+type PreferredPaymentPreferenceType =
+  | { key: 'preferredPaymentMethod'; value: 'balance' | 'credit-card' }
+  | { key: 'preferredCurrency'; value: KnownCurrency }
 export interface PreferredPaymentPreference extends UserPreferenceBase {
   id: string
   user: string
   group: 'preferred-payment'
-  preferredPaymentMethod: 'balances' | 'credit-card' | 'wire-transfer'
+  preferences: PreferredPaymentPreferenceType[]
 }
 
 export type UserPreference = FirstTimeModalPreference | ThemePreference | PreferredPaymentPreference

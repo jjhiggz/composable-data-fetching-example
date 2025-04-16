@@ -1,57 +1,25 @@
 {
   "user-preferences": [
     {
+      "id": "e31e",
       "group": "first-time-modal",
-      "id": "pref1",
-      "seenModals": [
-        "balances"
-      ],
-      "user": "user123"
+      "user": "user123",
+      "preferences": [
+        {
+          "key": "balances",
+          "value": "true"
+        }
+      ]
     },
     {
+      "id": "ce32",
       "group": "theme",
-      "id": "pref2",
-      "theme": "dark",
-      "user": "user123"
-    },
-    {
-      "group": "preferred-payment",
-      "id": "pref3",
-      "preferredPaymentMethod": "credit-card",
-      "user": "user123"
-    },
-    {
-      "group": "theme",
-      "id": "pref4",
-      "theme": "light",
-      "user": "user456"
-    },
-    {
-      "group": "preferred-payment",
-      "id": "pref5",
-      "preferredPaymentMethod": "wire-transfer",
-      "user": "user456"
-    },
-    {
-      "group": "theme",
-      "id": "cb7b",
-      "theme": "dark",
-      "user": "sdf"
-    },
-    {
-      "group": "first-time-modal",
-      "id": "cab1",
-      "seenModals": [
-        "balances"
-      ],
-      "user": "sdf"
-    },
-    {
-      "id": "a4c0",
-      "group": "first-time-modal",
-      "user": "jon",
-      "seenModals": [
-        "balances"
+      "user": "user123",
+      "preferences": [
+        {
+          "key": "theme",
+          "value": "dark"
+        }
       ]
     }
   ]

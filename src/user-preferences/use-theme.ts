@@ -23,19 +23,24 @@ export const useTheme = () => {
     return {
       group: 'theme',
       user: userData.value.id,
-      theme: 'light',
+      preferences: [],
     }
   })
+
+  const theme = computed<'light' | 'dark'>(
+    () => themePreference.value.preferences.find((p) => p.key === 'theme')?.value ?? 'light',
+  )
 
   const toggleTheme = () => {
     updateUserPreference({
       ...themePreference.value,
-      theme: themePreference.value.theme === 'dark' ? 'light' : 'dark',
+      group: 'theme',
+      preferences: [{ key: 'theme', value: theme.value === 'light' ? 'dark' : 'light' }],
     })
   }
 
   return {
-    themePreference,
+    theme,
     toggleTheme,
   }
 }

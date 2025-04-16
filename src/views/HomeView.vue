@@ -20,7 +20,7 @@ const {
   isLoading: preferencesLoading,
   error: preferencesError,
 } = useUserPreferences()
-const { themePreference, toggleTheme } = useTheme()
+const { theme, toggleTheme } = useTheme()
 const { currentlyOpenedModalType, closeForever, closeTemporarily } = useFirstTimeModal()
 const charactersQuery = useCharacters()
 
@@ -71,18 +71,16 @@ const openJsonView = (preference: UserPreference) => {
 </script>
 
 <template>
-  <main :class="themePreference.theme">
+  <main :class="theme">
     <div class="container">
       <div class="user-info">
         <div class="user-controls">
           <button
             class="theme-toggle"
             @click="toggleTheme"
-            :title="
-              themePreference.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
-            "
+            :title="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
           >
-            {{ themePreference.theme === 'dark' ? '🌞' : '🌙' }}
+            {{ theme === 'dark' ? '🌞' : '🌙' }}
           </button>
           <button @click="handleLogout" class="logout-button" :disabled="isLoggingOut">
             {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
