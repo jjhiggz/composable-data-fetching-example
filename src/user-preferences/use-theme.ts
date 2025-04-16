@@ -5,14 +5,14 @@ import type { Optional } from 'ts-toolbelt/out/Object/Optional'
 import { useOptionalUser, type User } from '@/hooks/use-auth'
 
 // Separated logic, can be tested
-export const computeTheme = (
+export const _computeTheme = (
   themePreference: UpsertThemePreferenceDTO | undefined,
 ): 'light' | 'dark' => {
   return themePreference?.preferences.find((p) => p.key === 'theme')?.value ?? 'light'
 }
 
 // separated logic, can be tested
-export const computeThemePreference = ({
+export const _computeThemePreference = ({
   userData,
   userPreferences,
 }: {
@@ -33,7 +33,7 @@ export const computeThemePreference = ({
   }
 }
 
-export const getUpdateThemeDTO = ({
+export const _getUpdateThemeDTO = ({
   theme,
   existingPreference,
 }: {
@@ -54,17 +54,17 @@ export const useTheme = () => {
   const { data: userData } = useOptionalUser()
 
   const themePreference: ComputedRef<UpsertThemePreferenceDTO> = computed(() =>
-    computeThemePreference({
+    _computeThemePreference({
       userData: userData.value,
       userPreferences: preferencesQuery.data.value,
     }),
   )
 
-  const theme = computed(() => computeTheme(themePreference.value))
+  const theme = computed(() => _computeTheme(themePreference.value))
 
   const toggleTheme = () => {
     updateUserPreference(
-      getUpdateThemeDTO({
+      _getUpdateThemeDTO({
         existingPreference: themePreference.value,
         theme: theme.value,
       }),

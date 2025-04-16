@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeTheme, computeThemePreference, getUpdateThemeDTO } from './use-theme'
+import { _computeTheme, _computeThemePreference, _getUpdateThemeDTO } from './use-theme'
 import type { ThemePreference, UserPreference } from './user-preference.types'
 import type { Optional } from 'ts-toolbelt/out/Object/Optional'
 
@@ -7,12 +7,12 @@ type UpsertThemePreferenceDTO = Optional<ThemePreference, 'id'>
 
 describe('computeTheme', () => {
   it('returns light theme when no preference exists', () => {
-    const result = computeTheme(undefined)
+    const result = _computeTheme(undefined)
     expect(result).toBe('light')
   })
 
   it('returns light theme when preferences array is empty', () => {
-    const result = computeTheme({
+    const result = _computeTheme({
       group: 'theme',
       user: 'test-user',
       preferences: [],
@@ -21,7 +21,7 @@ describe('computeTheme', () => {
   })
 
   it('returns the theme value from preferences when it exists', () => {
-    const result = computeTheme({
+    const result = _computeTheme({
       group: 'theme',
       user: 'test-user',
       preferences: [{ key: 'theme', value: 'dark' }],
@@ -35,7 +35,7 @@ describe('computeThemePreference', () => {
 
   it('throws error when user is not provided', () => {
     expect(() =>
-      computeThemePreference({
+      _computeThemePreference({
         userData: null,
         userPreferences: [],
       }),
@@ -50,7 +50,7 @@ describe('computeThemePreference', () => {
       preferences: [{ key: 'theme', value: 'dark' }],
     }
 
-    const result = computeThemePreference({
+    const result = _computeThemePreference({
       userData: mockUser,
       userPreferences: [existingPreference],
     })
@@ -59,7 +59,7 @@ describe('computeThemePreference', () => {
   })
 
   it('returns new theme preference when none exists', () => {
-    const result = computeThemePreference({
+    const result = _computeThemePreference({
       userData: mockUser,
       userPreferences: [],
     })
@@ -80,7 +80,7 @@ describe('getUpdateThemeDTO', () => {
       preferences: [{ key: 'theme', value: 'light' }],
     }
 
-    const result = getUpdateThemeDTO({
+    const result = _getUpdateThemeDTO({
       theme: 'light',
       existingPreference,
     })
@@ -99,7 +99,7 @@ describe('getUpdateThemeDTO', () => {
       preferences: [{ key: 'theme', value: 'dark' }],
     }
 
-    const result = getUpdateThemeDTO({
+    const result = _getUpdateThemeDTO({
       theme: 'dark',
       existingPreference,
     })
@@ -119,7 +119,7 @@ describe('getUpdateThemeDTO', () => {
       preferences: [{ key: 'theme', value: 'light' }],
     }
 
-    const result = getUpdateThemeDTO({
+    const result = _getUpdateThemeDTO({
       theme: 'light',
       existingPreference,
     })
